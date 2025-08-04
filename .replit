@@ -1,0 +1,16 @@
+modules = ["nodejs-20"]
+run = "cd client && npm run dev"
+[nix]
+channel = "stable-25_05"
+
+[deployment]
+run = ["sh", "-c", "cd client && npm run dev"]
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
+
+[[ports]]
+localPort = 5175
+externalPort = 80
+exposeLocalhost = true

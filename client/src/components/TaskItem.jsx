@@ -1,4 +1,4 @@
-export default function TaskItem(props) {
+export default function TaskItem({...props}) {
     return (
         <div className="flex justify-between items-start gap-4 p-4 mt-6 max-w-[700px] w-full mx-4 sm:mx-auto bg-white rounded-xl shadow-md">
             
@@ -16,7 +16,7 @@ export default function TaskItem(props) {
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                 <div className="bg-gray-100 rounded-md px-3 py-1 text-sm text-gray-700">
                     <p className="text-xs text-gray-500">Assigned to:</p>
-                    <p className="font-medium">{props.assignee}</p>
+                    <p className="font-medium">{props.assignedTo}</p>
                 </div>
                 <div className="bg-gray-100 rounded-md px-3 py-1 text-sm text-gray-700">
                     <p className="text-xs text-gray-500">Done by:</p>

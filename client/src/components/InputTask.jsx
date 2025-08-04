@@ -1,76 +1,114 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const InputTask = () => {
-  const [taskName, setTaskName] = useState('');
-  const [assignee, setAssignee] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
+  const [users, setUsers] = useState([]);
+  const [name, setName] = useState("");
+  const [assignedBy, setAssignedBy] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
+  const [doneBy, setDoneBy] = useState("");
 
-  const handleTaskNameChange = (event) => {
-    setTaskName(event.target.value);
-  };
-
-  const handleAssigneeChange = (event) => {
-    setAssignee(event.target.value);
-  };
-
-  const handleAssignedToChange = (event) => {
-    setAssignedTo(event.target.value);
-  };
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(
+          "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:5000/api/users",
+        );
+        const data = await response.json();
+        setUsers(data);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const taskData = {
-      taskName: taskName,
-      assignee: assignee,
-      assignedTo: assignedTo,
+      name,
+      assignedTo,
+      assignedBy,
+      doneBy: "6890ff0fd3d637054979cd54",
     };
+    console.log(taskData);
+    console.log(JSON.stringify(taskData));
 
     try {
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:5000/api/tasks",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(taskData),
         },
-        body: JSON.stringify(taskData),
-      });
+      );
 
       if (response.ok) {
-        console.log('task created successfully');
-        setTaskName('');
-        setAssignee('');
-        setAssignedTo('');
+        console.log("task created successfully");
+        setName("");
+        setAssignedBy("");
+        setAssignedTo("");
+        // setDoneBy("");
       } else {
-        console.error('failed to create task');
+        console.error("failed to create task");
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-4 max-w-md mx-auto p-4">
+    <form
+      onSubmit={handleSubmit}
+      className="mt-6 space-y-4 max-w-md mx-auto p-4"
+    >
       <input
         type="text"
         placeholder="Enter task name"
-        value={taskName}
-        onChange={handleTaskNameChange}
+        value={name}
+        onChange={(event) => setName(event.target.value)}
         className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         required
       />
-      <select value={assignee} onChange={handleAssigneeChange} className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-        <option value="">Select Assignee</option>
-        <option value="user1">User 1</option>
-        <option value="user2">User 2</option>
-        <option value="user3">User 3</option>
+      <select
+        value={assignedBy}
+        onChange={(event) => setAssignedBy(event.target.value)}
+        className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        required
+      >
+        <option value="">Select assigned By</option>
+        {users.map((user) => {
+          return (
+            <option key={user._id} value={user._id}>
+              {user.name}
+            </option>
+          );
+        })}
       </select>
-      <select value={assignedTo} onChange={handleAssignedToChange} className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+      <select
+        value={assignedTo}
+        onChange={(event) => setAssignedTo(event.target.value)}
+        className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        required
+      >
         <option value="">Select Assigned To</option>
-        <option value="group1">Group 1</option>
-        <option value="group2">Group 2</option>
-        <option value="group3">Group 3</option>
+        {users.map((user) => {
+          return (
+            <option key={user._id} value={user._id}>
+              {user.name}
+            </option>
+          );
+        })}
       </select>
-      <button type="submit"  className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition duration-200">Create Task</button>
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition duration-200"
+      >
+        Create Task
+      </button>
     </form>
   );
 };
