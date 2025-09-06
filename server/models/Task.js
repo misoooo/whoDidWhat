@@ -1,11 +1,10 @@
-const mongoose = require("mongoose");
-const User = require("./User.js")
+import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema({
-    name: {type: String, required: true},
-    assignedTo: {type: mongoose.Schema.Types.ObjectId, ref: User},
-    assignedBy: {type: mongoose.Schema.Types.ObjectId, ref: User},
-    doneBy: {type: mongoose.Schema.Types.ObjectId, ref: User}
-})
+  room: { type: mongoose.Schema.Types.ObjectId, ref: "Room", required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  description: { type: String, required: true },
+  taskType: { type: String, enum: ["single", "rotated"], required: true },
+}, { timestamps: true });
 
-module.exports = mongoose.model("Task", taskSchema)
+export default mongoose.model("Task", taskSchema);
