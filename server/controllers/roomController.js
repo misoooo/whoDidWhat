@@ -35,7 +35,7 @@ export async function joinRoom(req, res) {
     if (!room) {
       return res.status(404).json({ message: "Room not found" });
     }
-    const roomCode = req.body.roomCode;
+    const roomCode = req.body.code;
     if (roomCode !== room.code)
       return res.status(400).json({ message: "Invalid room code" });
     const newMember = {
