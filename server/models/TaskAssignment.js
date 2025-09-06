@@ -1,13 +1,11 @@
-const mongoose = require("mongoose");
-const Task = require("./Task");
-const User = require("./User");
+import mongoose from "mongoose";
 
 const taskAssignmentSchema = new mongoose.Schema({
-  task: { type: mongoose.Schema.Types.ObjectId, ref: Task, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: User, required: true },
+  task: { type: mongoose.Schema.Types.ObjectId, ref: "Task", required: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   dueDate: { type: Date },
   status: { type: String, enum: ["pending", "done"], default: "pending" },
   completedAt: { type: Date }
 }, { timestamps: true });
 
-module.exports = mongoose.model("TaskAssignment", taskAssignmentSchema);
+export default mongoose.model("TaskAssignment", taskAssignmentSchema);
