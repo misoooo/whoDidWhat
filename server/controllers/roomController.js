@@ -15,8 +15,8 @@ export async function createRoom(req, res) {
     const newRoom = new Room({
       name: req.body.name,
       code,
-      members: [req.user._id], //check
-      admin: req.user._id,
+      members: [], // Start with empty members array - add authentication later
+      // admin: req.user._id, // Add authentication later
     });
 
     await newRoom.save();
@@ -31,12 +31,12 @@ export async function createRoom(req, res) {
 
 export async function joinRoom(req, res) {
   try {
-    const room = await Room.findByID(req.params.id);
+    const room = await Room.findById(req.params.id);
     if (!room) {
       return res.status(404).json({ message: "Room not found" });
     }
     const roomCode = req.body.roomCode;
-    if (roomCode !== room.roomCode)
+    if (roomCode !== room.code)
       return res.status(400).json({ message: "Invalid room code" });
     const newMember = {
       user: req.body.user,
