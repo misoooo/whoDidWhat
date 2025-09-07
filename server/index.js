@@ -5,6 +5,7 @@ import Task from "./models/Task.js";
 import User from "./models/User.js";
 import taskRouter from "./routes/tasks.js";
 import roomRouter from "./routes/rooms.js";
+import auth from "./routes/auth.js"
 
 const app = express();
 app.use(express.json());
@@ -31,6 +32,7 @@ app.get("/api/tasks", async (req, res) => {
 
 app.use("/api/tasks", taskRouter);
 app.use("/api/rooms", roomRouter);
+app.use("/api/auth", auth);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

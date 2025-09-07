@@ -1,10 +1,6 @@
-import express from "express";
-const router = express.Router();
+import User from "../models/User.js"
 
-import User from "../models/User.js";
-
-// GET all users
-router.get("/", async (req, res) => {
+export const getUsers = async(req, res)=>{
   try {
     const users = await User.find().populate("rooms.roomId", "name code");
     res.json(users);
@@ -12,10 +8,9 @@ router.get("/", async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
-});
+}
 
-// POST new user
-router.post("/", async (req, res) => {
+export const createUser = async(req, res)=>{
   try {
     const user = new User({
       name: req.body.name,
@@ -29,6 +24,4 @@ router.post("/", async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-});
-
-export default router;
+}

@@ -9,17 +9,18 @@ export async function createRoom(req, res) {
 
     while (exists) {
       code = codeGenerator(8);
+      console.log(code);
       exists = await Room.exists({ code });
     }
 
     const newRoom = new Room({
       name: req.body.name,
-      code,
+      code: code,
       members: [], // Start with empty members array - add authentication later
       // admin: req.user._id, // Add authentication later
     });
 
-    await newRoom.save();
+    await Room.create(newRoom);
     res.status(201).json(newRoom);
     console.log("room created successfully");
     console.log(newRoom);
