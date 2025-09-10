@@ -1,34 +1,12 @@
-import express from "express";
-const router = express.Router();
+import mongoose from "mongoose";
 
-import User from "../models/User.js";
-
-// GET all users
-router.get("/", async (req, res) => {
-  try {
-    const users = await User.find().populate("rooms.roomId", "name code");
-    res.json(users);
-    console.log("Fetched user data:", users);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+const roomSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
+  members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  admin: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
 });
 
-// POST new user
-router.post("/", async (req, res) => {
-  try {
-    const user = new User({
-      name: req.body.name,
-      email: req.body.email,
-      passwordHash: req.body.passwordHash, // hash later in auth
-      rooms: req.body.rooms || [] // optional, defaults to empty array
-    });
+const Room = mongoose.model("Room", roomSchema);
 
-    const savedUser = await user.save();
-    res.status(201).json(savedUser);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-export default router;
+export default Room;

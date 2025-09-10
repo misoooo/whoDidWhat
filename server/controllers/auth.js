@@ -1,59 +1,55 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import bcrypt from "bcrypt";
+import User from "../models/User.js";
 
 dotenv.config();
 
-export const generateToken = async (req, res) => {
-  try {
-    let jwtSecretKey = process.env.JWT_SECRET_KEY;
-    let data = {
-      time: Date(),
-      userId: 12,
-    };
+export const signup = async(req, res)=>{
+  try{
+    const {name, email, password} = req.body;
+    console.log("data received for signup: ", name, email, password);
+    const existingUser = await User.findOne({email});
+    if(existingUser){
+      return res.status(400).json({message: "User already exists"});
+    }
+    const hashedPassword = await bcrypt.hash(password,10);
 
-    const token = jwt.sign(data, jwtSecretKey);
+    const newUser = new User({
+      name,
+      email,
+      passwordHash: hashedPassword
+    });
+    console.log("new user created: ", newUser);
+    await newUser.save();
 
-    res.send(token);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const token = jwt.sign({userId: newUser._id}, process.env.JWT_SECRET_KEY, {expiresIn: "7d"});
+    console.log("token generated: ", token);
+    res.status(201).json({token});
+  }catch(err){
+    console.error("Error during signup:", err);
+    res.status(500).json({message: err.message});
   }
-};
+}
 
-export const verifyToken = async (req, res) => {
-  const jwtSecretKey = process.env.JWT_SECRET_KEY;
+export const login = async(req, res)=>{
+  try{
+    const {email, password} = req.body;
+    const user = await UserActivation.findOne({email});
 
-  try {
-    // 1. Try custom header
-    let token = req.header(process.env.TOKEN_HEADER_KEY);
-
-    // 2. Fallback: Try "Authorization: Bearer <token>"
-    if (!token) {
-      const authHeader = req.headers["authorization"];
-      if (authHeader && authHeader.startsWith("Bearer ")) {
-        token = authHeader.split(" ")[1];
-      }
-      console.log("Token from Authorization header:", token)
+    if(!user){
+      return res.status(400).json({message: "Invalid credentials"});
     }
 
-    // 3. If still no token
-    if (!token) {
-      return res.status(403).json({ message: "Token not provided" });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if(!isMatch) {
+      console.log("invalid credentials, user didnt match")
+      return res.status(400).json({message: "Invalid credentials"});
     }
-
-    // 4. Verify
-    const decoded = jwt.verify(token, jwtSecretKey);
-    console.log("Decoded token:", decoded);
-
-    // At this point, token is valid
-    return res.status(200).json({
-      message: "Successfully Verified",
-      data: decoded, //  userId here wanted
-    });
-
-  } catch (error) {
-    return res.status(401).json({
-      message: "Invalid Token",
-      error: error.message,
-    });
+    const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET_KEY, {expiresIn: "7d"});
+    console.log("user authenticated, token generated: ", token)
+    res.status(200).json({token});
+  }catch(err){
+    res.status(500).json({message: err.message});
   }
-};
+}

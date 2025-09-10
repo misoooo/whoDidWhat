@@ -11,7 +11,7 @@ const InputTask = ({setTasks, closePopup}) => {
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:5000/api/users",
+          "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/users",
         );
         const data = await response.json();
         setUsers(data);
@@ -36,7 +36,7 @@ const InputTask = ({setTasks, closePopup}) => {
 
     try {
       const response = await fetch(
-        "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:5000/api/tasks",
+        "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/tasks",
         {
           method: "POST",
           headers: {
@@ -70,7 +70,7 @@ const InputTask = ({setTasks, closePopup}) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="relative bg-white border border-black rounded-xl stroke-2 mx-10">
+      <div className="relative bg-white border border-black rounded-xl stroke-2 mx-10" onBlur={closePopup}>
       <form
         onSubmit={handleSubmit}
         className="mt-6 space-y-4 max-w-md mx-auto p-4"

@@ -1,11 +1,12 @@
 import { useState } from "react";
+import ProfileSidebar from "../pages/ProfileSideBar";
 
 export default function Header() {
     const [roomOptions, setRoomOptions] = useState();
     //room options will have list of rooms the user is a member of, and selecting a room will change the content of the header-title to the name of the room, and the content of the page to the tasks of that room
     //room options will also have a button to create a new room
     //room options will also have a button to leave the current room
-    const [userProfile, setUserProfile] = useState(false);
+    const [showSideBar, setShowSideBar] = useState(false);
     //userProfile when positive, will show a side menu with user profile information, a button to logout, and if the user is admin of current room, then an option to changes settings of the room - add members, remove members, change room name, delete room, and will also have a unique code which needs to be used to join the room.
     
     return (
@@ -14,6 +15,7 @@ export default function Header() {
                 <img
                     src="./src/assets/images/psyduck2.jpg"
                     className="w-14 h-14 rounded-full object-cover "
+                    onClick={() => setShowSideBar(!showSideBar)}
                 />
                 <button
                     type="button"
@@ -23,6 +25,14 @@ export default function Header() {
                     Homies 🤜🏻🤛🏻
                 </button>
             </span>
+            {/* Sidebar */}
+              {showSideBar && (
+                <ProfileSidebar
+                  user={{ name: "Mimansa" }}
+                  role="admin" // or "member"
+                  onClose={() => setShowSideBar(false)}
+                />
+              )}
         </div>
     );
 }

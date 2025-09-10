@@ -3,7 +3,6 @@ import axios from "axios";
 import TaskItem from "../components/TaskItem";
 import Header from "../components/Header";
 import InputTask from "../components/InputTask";
-import Options from "../components/Options";
 
 // axios.get("http://localhost:5000/api/tasks");
 
@@ -16,15 +15,17 @@ export default function TaskPage() {
       try {
         // Fetch tasks first
         const tasksRes = await axios.get(
-          "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:5000/api/tasks",
+          "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/tasks",
         );
         setTasks(tasksRes.data);
+        console.log('fetched tasks: ', tasksRes.data);
 
         // Then fetch users
         const usersRes = await axios.get(
-          "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:5000/api/users",
+          "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/users",
         );
         setUsers(usersRes.data);
+        console.log('fetched users: ', usersRes.data);
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -33,8 +34,18 @@ export default function TaskPage() {
     fetchData();
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/tasks/${id}`);
+      setTasks(tasks.filter(task => task._id !== id));
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
+  };
+
   const getUserName = (userID) => {
     const user = users.find((user) => user._id === userID);
+    console.log('user: ', user);
     return user ? user.name : "Unknown";
   };
 
@@ -60,13 +71,14 @@ export default function TaskPage() {
       )}
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-4 flex items-center justify-center">Tasks</h1>
-        <Options text="some text" />
         {tasks.map((task) => (
           <TaskItem
             key={task._id}
             title={task.name}
             assignedTo={getUserName(task.assignedTo)}
             doneBy={getUserName(task.doneBy)}
+            onDelete={handleDelete}
+            id={task._id}
           />
         ))}
       </div>

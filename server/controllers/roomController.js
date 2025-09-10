@@ -16,8 +16,12 @@ export async function createRoom(req, res) {
     const newRoom = new Room({
       name: req.body.name,
       code: code,
-      members: [], // Start with empty members array - add authentication later
-      // admin: req.user._id, // Add authentication later
+      members: [
+        {
+          user: req.user._id,
+          role: "admin"
+        }
+      ],
     });
 
     await Room.create(newRoom);
