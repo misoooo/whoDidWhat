@@ -7,9 +7,11 @@ export default function AuthPage({ onAuthSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleAuth = async()=>{
-    const endpoint = isSignup ? "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/auth/signup" : "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/auth/login";
-    
+  const handleAuth = async () => {
+    const endpoint = isSignup
+      ? "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/auth/signup"
+      : "https://11566182-3c07-424d-93fa-58cd18b332b8-00-5k32tb2of67a.picard.replit.dev:3001/api/auth/login";
+
     if (isSignup && (!name || !email || !password)) {
       alert("Please fill out all fields to sign up.");
       return;
@@ -19,35 +21,32 @@ export default function AuthPage({ onAuthSuccess }) {
       return;
     }
 
-    const payload = isSignup ? {name, email, password} : {email, password};
-    const methodType = isSignup ? "POST" : "GET"
-    try{
+    const payload = isSignup ? { name, email, password } : { email, password };
+    try {
       console.log("Sending signup data:", { name, email, password });
       const response = await fetch(endpoint, {
-        method: methodType,
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
-        }
+        },
+        body: JSON.stringify(payload),
       });
-      if (isSignup) {
-        response.body = JSON.stringify(payload);
-      }
-      
+
       console.log("response received: ", response);
-      if(response.ok){
+      if (response.ok) {
         const data = await response.json();
         const token = data.token;
         console.log("token received: ", token);
         localStorage.setItem("authToken", token);
         onAuthSuccess();
-      }else{
+      } else {
         console.error("Authentication failed");
       }
       console.log(response);
-    }catch(err){
+    } catch (err) {
       console.error("Error during authentication:", err);
     }
-  }
+  };
 
   return (
     <div className="w-96 p-6 bg-white rounded-lg shadow-lg mx-auto mt-20">
@@ -56,37 +55,41 @@ export default function AuthPage({ onAuthSuccess }) {
       </h2>
 
       <div className="flex flex-col gap-4">
-        {isSignup && <Input 
-          label="Name" 
-          placeholder="Enter your name" 
-          value={name}
-          onChange={(e)=>{
-            setName(e.target.value)
-            console.log("name: ", name)
-          }}/>}
-        <Input 
-          label="Email" 
-          type="email" 
+        {isSignup && (
+          <Input
+            label="Name"
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              console.log("name: ", name);
+            }}
+          />
+        )}
+        <Input
+          label="Email"
+          type="email"
           placeholder="Enter your email"
           value={email}
-          onChange={(e)=>{
-            setEmail(e.target.value)
-            console.log("email: ", email)
-          }}/>
+          onChange={(e) => {
+            setEmail(e.target.value);
+            console.log("email: ", email);
+          }}
+        />
         <Input
           label="Password"
           type="password"
           placeholder="Enter your password"
           value={password}
-          onChange={(e)=>{
-            setPassword(e.target.value)
-            console.log("password: ", password)
+          onChange={(e) => {
+            setPassword(e.target.value);
+            console.log("password: ", password);
           }}
         />
 
         <button
           className="bg-blue-500 text-white p-2 rounded-lg shadow hover:bg-blue-600 transition"
-          onClick={()=>handleAuth()}
+          onClick={() => handleAuth()}
         >
           {isSignup ? "Create Account" : "Login"}
         </button>

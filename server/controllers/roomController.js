@@ -3,19 +3,19 @@ import codeGenerator from "../utils/codeGenerator.js";
 
 export async function createRoom(req, res) {
   try {
-    console.log("creating room");
-    let code;
-    let exists = true;
+    // console.log("creating room");
+    // let code;
+    // let exists = true;
 
-    while (exists) {
-      code = codeGenerator(8);
-      console.log(code);
-      exists = await Room.exists({ code });
-    }
+    // while (exists) {
+    //   code = codeGenerator(8);
+    //   console.log(code);
+    //   exists = await Room.exists({ code });
+    // }
 
     const newRoom = new Room({
       name: req.body.name,
-      code: code,
+      code: req.body.code,
       members: [
         {
           user: req.user._id,
@@ -23,6 +23,8 @@ export async function createRoom(req, res) {
         }
       ],
     });
+    console.log("authrnticated user: ", req.user);
+    console.log("new room created: ", newRoom);
 
     await Room.create(newRoom);
     res.status(201).json(newRoom);
@@ -36,17 +38,24 @@ export async function createRoom(req, res) {
 
 export async function joinRoom(req, res) {
   try {
-    const room = await Room.findById(req.params.id);
-    if (!room) {
-      return res.status(404).json({ message: "Room not found" });
-    }
+    // const room = await Room.findOne(req.params.id);
+    // if (!room) {
+    //   return res.status(404).json({ message: "Room not found" });
+    // }
     const roomCode = req.body.code;
-    if (roomCode !== room.code)
+    const room = await Room.findOne({ code: roomCode });
+    if (!room)
       return res.status(400).json({ message: "Invalid room code" });
     const newMember = {
-      user: req.body.user,
+      user: req.user._id,
       role: "member", //incase i want to have multiple admin in future
     };
+    const alreadyMember = room.members.some(
+      (member) => member.user.toString() === req.user._id.toString(),
+    )
+    if(alreadyMember){
+      return res.status(400).json({message: "You are already a member of this room"})
+    }
     room.members.push(newMember);
     await room.save();
     res.status(201).json(room);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthPage from "./pages/AuthPage";
 import RoomListPage from "./pages/RoomListPage";
 import CreateRoomPage from "./pages/CreateRoomPage";
@@ -8,6 +8,13 @@ import JoinRoomPage from "./pages/JoinRoomPage";
 export default function App() {
   const [page, setPage] = useState("auth");
   const [selectedRoom, setSelectedRoom] = useState(null);
+
+  useEffect(()=>{
+    const token = localStorage.getItem("authToken");
+    if(token){
+      setPage("rooms");
+    }
+  },[]);
 
   return (
     <>

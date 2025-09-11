@@ -19,15 +19,34 @@ export default function RoomListPage({ onSelectRoom, onCreateRoom, onJoinRoom })
   
 
   return (
-    <div className="w-96 p-6 bg-white rounded-lg shadow-lg mx-auto mt-20">
-      <h2 className="text-xl font-bold mb-4 text-center">Your Rooms</h2>
-      <div className="flex flex-col gap-3">
-        {rooms.map((room, i) => (
-          <Option key={i} text={room} onClick={() => onSelectRoom(room)} />
-        ))}
-        <Option text="Create Room" onClick={onCreateRoom} />
-        <Option text="Join Room" onClick={onJoinRoom} />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-green-100">
+      <div className="w-96 p-6 bg-white rounded-2xl shadow-xl border border-gray-100">
+        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800 tracking-wide">
+          Your Rooms
+        </h2>
+        <div className="flex flex-col gap-4">
+          {rooms.map((room) => (
+            <Option
+              key={room._id}
+              text={room.name}
+              onClick={() => onSelectRoom(room)}
+              className="hover:bg-gray-50 transition-colors duration-200 rounded-lg"
+            />
+          ))}
+          <Option
+            text="➕ Create Room"
+            onClick={onCreateRoom}
+            className="text-blue-600 font-medium hover:bg-blue-50 transition-colors duration-200 rounded-lg"
+          />
+          <Option
+            text="🔗 Join Room"
+            onClick={onJoinRoom}
+            className="text-green-600 font-medium hover:bg-green-50 transition-colors duration-200 rounded-lg"
+          />
+        </div>
       </div>
     </div>
   );
+
+
 }

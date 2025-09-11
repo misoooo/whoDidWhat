@@ -1,6 +1,7 @@
 import express from "express";
 import Room from "../models/Room.js";
 import { createRoom, joinRoom, leaveRoom, deleteRoom, modifyRoom } from "../controllers/roomController.js";
+import { authenticate } from "../middleware/auth.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -14,10 +15,10 @@ router.get("/", async (req, res) => {
 });
 
 //create room
-router.post("/", createRoom);
+router.post("/", authenticate, createRoom);
 
 //member joining room/ add member to room
-router.post("/:id/members", joinRoom);
+router.post("/join", authenticate, joinRoom);
 
 //delete member from room
 router.delete("/:id/members/:membersId", leaveRoom);

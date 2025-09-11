@@ -35,13 +35,17 @@ export const signup = async(req, res)=>{
 export const login = async(req, res)=>{
   try{
     const {email, password} = req.body;
-    const user = await UserActivation.findOne({email});
+    const user = await User.findOne({email});
 
     if(!user){
       return res.status(400).json({message: "Invalid credentials"});
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    if(!user.passwordHash){
+      console.log("user has no passwordHash");
+      return res.status(400).json({message: "Invalid credentials"});
+    }
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
     if(!isMatch) {
       console.log("invalid credentials, user didnt match")
       return res.status(400).json({message: "Invalid credentials"});
@@ -50,6 +54,7 @@ export const login = async(req, res)=>{
     console.log("user authenticated, token generated: ", token)
     res.status(200).json({token});
   }catch(err){
+    console.log("Error during login:", err);
     res.status(500).json({message: err.message});
   }
 }
